@@ -9,14 +9,11 @@ use aada/types/collateral
 use aada/types/order
 use aada/types/pool
 use aada/utils.{expect_by_oref}
-use aiken/cbor
 use aiken/dict
 use aiken/list
-use aiken/string
 use aiken/transaction.{
   InlineDatum, Input, Output, ScriptContext, Spend, Transaction,
 }
-use aiken/transaction/credential.{Address}
 use aiken/transaction/value.{from_minted_value, quantity_of}
 
 fn order_wrapper(

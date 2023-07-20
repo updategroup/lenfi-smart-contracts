@@ -18,10 +18,11 @@ type TokenRedeemer {
 // Mint liquidity tokens that are the right to claim deposits
 validator(pool_hash: ByteArray) {
   fn liquidity_token(redeemer: TokenRedeemer, ctx: ScriptContext) {
-    let pool_address_spend_key_only: Address = from_script(pool_hash) // This is not representation of pool address. Pool address contains stake hash as well.
+    let pool_address_spend_key_only: Address = from_script(pool_hash)
+    // This is not representation of pool address. Pool address contains stake hash as well.
     expect Mint(own_policy) = ctx.purpose
     when redeemer is {
-      TransitionPool { pool_oref } -> {
+      TransitionPool { .. } -> {
         let pool_input =
           utils.expect_unique(
             list.filter(
@@ -71,11 +72,15 @@ validator(pool_hash: ByteArray) {
       //     depositing_amount |> rats.le(expected_deposit_amount)
       //   }
       // output_datum.lent_out == input_datum.lent_out && input_datum.params.pool_nft_name == output_datum.params.pool_nft_name && lp_token_name == output_datum.params.pool_nft_name && valid_lp_token_change
-      DestroyPool { pool_oref } -> {
+      DestroyPool { .. } -> {
         let pool_input =
           utils.expect_unique(
-            utils.get_inputs_by_payment_credential(ctx.transaction.inputs, pool_address_spend_key_only), //
+            utils.get_inputs_by_payment_credential(
+              ctx.transaction.inputs,
+              pool_address_spend_key_only,
+            ),
           )
+        //
         expect InlineDatum(input_datum) = pool_input.output.datum
         expect input_datum: pool.Datum = input_datum
         // // LP token name is the same as pool TN
