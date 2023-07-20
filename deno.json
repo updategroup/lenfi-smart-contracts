@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "build": "aiken build -k && deno run -A https://deno.land/x/lucid@0.10.6/blueprint.ts && deno fmt"
+  }
+}

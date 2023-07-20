@@ -100,8 +100,8 @@ hljs.registerLanguage("aiken", function (hljs) {
         ],
       },
       {
-	begin: [/[a-z][a-z0-9_]*/, /[\n ]*\(/],
-	beginScope: { 1: "title.function.invoke" },
+        begin: [/[a-z][a-z0-9_]*/, /[\n ]*\(/],
+        beginScope: { 1: "title.function.invoke" },
       },
       {
         scope: "keyword",

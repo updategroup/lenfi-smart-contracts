@@ -26,7 +26,7 @@ window.Aiken = (function () {
       (acc, name) =>
         `${acc}
         <svg class="icon icon-${name}"><use xlink:href="#icon-${name}"></use></svg>`,
-      ""
+      "",
     );
   };
 
@@ -100,11 +100,11 @@ window.Aiken = (function () {
         `<button
           id="${property}-toggle"
           class="control control-${property} toggle toggle-0">
-        `
+        `,
       ) +
         `
         </button>
-      `
+      `,
     );
 
     setProperty(null, property, function () {
@@ -115,8 +115,9 @@ window.Aiken = (function () {
   const setProperty = function (_event, property) {
     const previousValue = self.getProperty(property);
 
-    const update =
-      2 < arguments.length ? arguments[2] : aikenConfig[property].update;
+    const update = 2 < arguments.length
+      ? arguments[2]
+      : aikenConfig[property].update;
     const value = update();
 
     try {
@@ -128,7 +129,7 @@ window.Aiken = (function () {
 
     const isDefault = value === aikenConfig[property].values[0].value;
     const toggleClasses = document.querySelector(
-      `#${property}-toggle`
+      `#${property}-toggle`,
     ).classList;
     toggleClasses.remove(`toggle-${isDefault ? 1 : 0}`);
     toggleClasses.add(`toggle-${isDefault ? 0 : 1}`);
@@ -151,7 +152,7 @@ window.Aiken = (function () {
       `;
     body.appendChild(el);
     self.hashOffset = parseInt(
-      getComputedStyle(el).getPropertyValue("height") || "0"
+      getComputedStyle(el).getPropertyValue("height") || "0",
     );
     body.removeChild(el);
   };
@@ -251,7 +252,7 @@ window.Aiken = (function () {
         start,
         batchSize,
         batchMillis,
-        searchIndex
+        searchIndex,
       ) {
         if (searchIndex != currentSearchIndex) {
           return;
@@ -269,7 +270,7 @@ window.Aiken = (function () {
             start + batchSize,
             batchSize,
             batchMillis,
-            searchIndex
+            searchIndex,
           );
         }, batchMillis);
       }
@@ -326,7 +327,7 @@ window.Aiken = (function () {
               for (let k = 0; k < preview_words_before; k++) {
                 const nextSpace = doc.content.lastIndexOf(
                   " ",
-                  previewStart - 2
+                  previewStart - 2,
                 );
                 const nextDot = doc.content.lastIndexOf(". ", previewStart - 2);
                 if (nextDot >= 0 && nextDot > nextSpace) {
@@ -376,7 +377,7 @@ window.Aiken = (function () {
             doc.title,
             0,
             doc.title.length,
-            titlePositions
+            titlePositions,
           );
         }
         if (contentPositions.length > 0) {
@@ -430,7 +431,7 @@ window.Aiken = (function () {
               content,
               position.previewStart,
               position.previewEnd,
-              position.highlight
+              position.highlight,
             );
             if (position.ellipsesAfter) {
               resultPreview.appendChild(document.createTextNode(" ..."));
@@ -489,9 +490,9 @@ window.Aiken = (function () {
           if (active) {
             active.classList.remove("active");
             if (active.parentElement.previousSibling) {
-              const previous =
-                active.parentElement.previousSibling.querySelector(
-                  ".search-result"
+              const previous = active.parentElement.previousSibling
+                .querySelector(
+                  ".search-result",
                 );
               previous.classList.add("active");
             }
@@ -502,10 +503,9 @@ window.Aiken = (function () {
           active = document.querySelector(".search-result.active");
           if (active) {
             if (active.parentElement.nextSibling) {
-              const next =
-                active.parentElement.nextSibling.querySelector(
-                  ".search-result"
-                );
+              const next = active.parentElement.nextSibling.querySelector(
+                ".search-result",
+              );
               active.classList.remove("active");
               next.classList.add("active");
             }
@@ -591,12 +591,12 @@ window.Aiken = (function () {
         `
       .module-name > a,
       .member-name a[href^='#']
-    `
+    `,
       )
       .forEach(function (title) {
         title.innerHTML = title.innerHTML.replace(
           /([A-Z])|([_/])/g,
-          "$2<wbr>$1"
+          "$2<wbr>$1",
         );
       });
   };
