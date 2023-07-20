@@ -5,22 +5,24 @@ use aada/types/pool
 use aada/utils
 use aiken/dict
 use aiken/interval.{Finite}
+use aiken/list
 use aiken/transaction.{
-  InlineDatum, Input, OutputReference, Publish, ScriptContext, Spend,
-  Transaction, WithdrawFrom,
+  InlineDatum, OutputReference, Publish, ScriptContext, Spend, Transaction,
+  WithdrawFrom,
 }
 use aiken/transaction/certificate.{
   CredentialDelegation, CredentialDeregistration, CredentialRegistration,
 }
-use aiken/transaction/value.{AssetName, PolicyId}
+use aiken/transaction/value.{AssetName, PolicyId, quantity_of}
 
-type PublishRedeemer =
-  Void
+type PublishRedeemer {
+  nft_oref: OutputReference,
+}
 
 type WithdrawalRedeemer {
   action: WithdrawalAction,
-  //amount: Int,
   pool_oref: OutputReference,
+  nft_oref: OutputReference,
 }
 
 type WithdrawalAction {
@@ -40,27 +42,33 @@ validator(
     } = ctx
     when purpose is {
       Publish(certificate) -> {
-        expect Void: PublishRedeemer = redeemer
+        expect PublishRedeemer { nft_oref }: PublishRedeemer = redeemer
         when certificate is {
           CredentialRegistration { .. } | CredentialDelegation { .. } | CredentialDeregistration { .. } -> {
-            expect Input { .. } =
-              utils.get_input_by_nft(
-                ctx.transaction.inputs,
+            expect Some(inp) =
+              inputs |> list.find(fn(out) { out.output_reference == nft_oref })
+            let nft_check =
+              quantity_of(
+                inp.output.value,
                 delegation_nft_policy,
                 pool_nft_name,
-              )
-            True
+              ) == 1
+            nft_check?
           }
           _ -> False?
         }
       }
       WithdrawFrom(withdraw_credentials) -> {
-        expect WithdrawalRedeemer { action, pool_oref }: WithdrawalRedeemer =
+        expect WithdrawalRedeemer { action, pool_oref, nft_oref }: WithdrawalRedeemer =
           redeemer
         //expect DepositToPool(withdrawal_type, pool_oref) = redeemer
         // validate that withdrawal happens to pool token
-        let pool_input =
-          utils.get_input_by_nft(inputs, pool_nft_policy, pool_nft_name)
+        expect Some(pool_input) =
+          inputs |> list.find(fn(out) { out.output_reference == nft_oref })
+        let nft_check =
+          quantity_of(pool_input.output.value, pool_nft_policy, pool_nft_name) == 1
+        // let pool_input =
+        //   utils.get_input_by_nft(inputs, pool_nft_policy, pool_nft_name)
         expect InlineDatum(pool_datum) = pool_input.output.datum
         expect pool_datum: pool.Datum = pool_datum
         let (withdrawing_stake_hash, current_withdrawal_amount) =
@@ -76,7 +84,7 @@ validator(
         when action is {
           ExactWithdrawal -> {
             let amount_check = current_withdrawal_amount >= fee_amount
-            withdrawal_check? && amount_check?
+            withdrawal_check? && amount_check? && nft_check?
           }
           SwapWithdrawal -> {
             expect Finite(lower_bound) =
@@ -101,7 +109,7 @@ validator(
               expected_deposit_amount
                 |> finance.calculate_tokenswap_discount
                 |> rats.ge(rats.from_int(fee_amount))
-            withdrawal_check? && amount_check?
+            withdrawal_check? && amount_check? && nft_check?
           }
         }
       }
