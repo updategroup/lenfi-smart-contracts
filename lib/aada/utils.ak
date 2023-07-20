@@ -1,13 +1,10 @@
 //// Utils 
 
 use aada/types.{AssetClass}
-use aada/types/oracle
 use aiken/builtin
-use aiken/cbor
 use aiken/dict
 use aiken/hash.{Blake2b_224, Hash}
 use aiken/list
-use aiken/string
 use aiken/transaction.{
   InlineDatum, Input, Output, OutputReference, ScriptContext,
 }
@@ -21,7 +18,6 @@ use aiken/transaction/value.{
 
 /// These are aada/plutus specific utility functions. They mostly take ctx/inputs/other transaction data.
 /// Other utils can be found in finance.ak
-
 pub type DatumOrc {
   oracle_parameters: OracleParametersd,
   token_a_amount: Int,
@@ -61,7 +57,6 @@ pub fn get_inputs_by_payment_credential(
     },
   )
 }
-
 
 /// Checks that an NFT, and only that NFT, was minted from policy.
 pub fn validate_mint_nft(
